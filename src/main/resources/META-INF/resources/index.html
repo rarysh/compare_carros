@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Carros - Rarysh</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        .lead {
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        .banner {
+            font-size: 2.7rem;
+            margin: 0;
+            padding: 0 1rem;
+            height: 60px;
+            background-color: #4281cb;
+            color: white;
+        }
+
+        .body {
+            margin: 0 !important;
+        }
+
+        a {
+            text-decoration: none !important;
+            color: #0f0b47;
+        }
+
+        .card:hover {
+            background-color: rgb(241, 241, 241);
+            color: #0f0b47;
+        }
+
+        .container {
+            background-color: rgb(245, 245, 245);
+            border-radius: 25px;
+        }
+
+        .capitalize {
+            text-transform: capitalize;
+        }
+    </style>
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+
+        var app = angular.module("VeiculoService", []);
+        //Controller Part
+        app.controller("VeiculoServiceController", function ($scope, $http) {
+
+            $scope.veiculos = [];
+            _refreshPageData();
+
+            function _refreshPageData() {
+                $http({
+                    method: 'GET',
+                    url: '/veiculo/1'
+                }).then(function successCallback(response) {
+                    $scope.veiculos = response.data;
+                }, function errorCallback(response) {
+                    console.log(response.statusText);
+                });
+            }
+        });
+    </script>
+</head>
+
+<body ng-app="VeiculoService" ng-controller="VeiculoServiceController">
+    <div class="banner lead">
+        Compare carros
+    </div>
+    <div class="container mt-4 mb-4">
+        <div class="row pb-4">
+            <div class="col-md-4 mt-4" ng-repeat="object in veiculos">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center">
+                        <span class="capitalize">{{ object.Modelo }}</span>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Marca: {{ object.Marca }}</li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Ano do Modelo: {{ object.AnoModelo }}</li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Combustível: {{ object.Combustivel }}</li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Mês de referência: {{ object.MesReferencia }}</li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Valor: {{ object.Valor }}</li>
+                    </ul>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">CodigoFipe: {{ object.CodigoFipe }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

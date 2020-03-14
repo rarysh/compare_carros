@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\main",
+    "\\src\\main\\java",
+    "\\src\\main\\java\\com",
+    "\\src\\main\\java\\com\\trsolucoes",
+    "\\src\\main\\java\\com\\trsolucoes\\modulo",
+    "\\src\\main\\java\\com\\trsolucoes\\modulo\\indice",
+    "\\src\\main\\java\\com\\trsolucoes\\modulo\\indice\\domain",
+    "\\src\\main\\java\\com\\trsolucoes\\modulo\\indice\\domain\\entity"
+  ],
+  "SelectedNode": "\\src\\main\\java\\com\\trsolucoes\\modulo\\indice\\service\\VeiculoService.java",
+  "PreviewInSolutionExplorer": false
+}
