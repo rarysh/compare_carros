@@ -4,13 +4,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.core.MediaType;
-
-import com.comparecarros.domain.Veiculo;
-
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -77,30 +70,6 @@ public class ResourceTest {
         @Test
         public void testListaVeiculoFavorito() {
                 given().when().get("/veiculo/favorito").then().statusCode(200);
-        }
-
-        @Test
-        public void testComparaListaDeVeiculos() {
-                List<Veiculo> listaVeiculos = new ArrayList<>();
-                listaVeiculos.add(new Veiculo("1", "1", "1", 2001, 1, "R$ 100,00", "1", "1", "1"));
-                listaVeiculos.add(new Veiculo("2", "1", "1", 2001, 1, "R$ 560,00", "1", "1", "1"));
-                listaVeiculos.add(new Veiculo("3", "1", "1", 2001, 1, "R$ 870,00", "1", "1", "1"));
-                listaVeiculos.add(new Veiculo("4", "1", "1", 2001, 1, "R$ 98,00", "1", "1", "1"));
-
-                given().body(listaVeiculos).header("Content-Type", MediaType.APPLICATION_JSON).when()
-                                .post("veiculo/comparacao").then().statusCode(200);
-        }
-
-        @Test
-        public void testComparaListaDeVeiculosPorAno() {
-                List<Veiculo> listaVeiculos = new ArrayList<>();
-                listaVeiculos.add(new Veiculo("1", "1", "1", 2001, 1, "R$ 100,00", "1", "1", "1"));
-                listaVeiculos.add(new Veiculo("2", "1", "1", 2001, 1, "R$ 560,00", "1", "1", "1"));
-                listaVeiculos.add(new Veiculo("3", "1", "1", 2001, 1, "R$ 870,00", "1", "1", "1"));
-                listaVeiculos.add(new Veiculo("4", "1", "1", 2001, 1, "R$ 98,00", "1", "1", "1"));
-
-                given().body(listaVeiculos).header("Content-Type", MediaType.APPLICATION_JSON).when()
-                                .post("veiculo/comparacaoPorAno").then().statusCode(200);
         }
 
         @Test

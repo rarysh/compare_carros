@@ -100,7 +100,7 @@ public class VeiculoResource {
     }
 
     @POST
-    @Path("/comparacao")
+    @Path("comparacao")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Compara uma lista de Veículos e retorna o mais barato e mais caro", description = "Compara uma lista de Veículos e retorna o mais barato e mais caro. Passar List<Veiculo> como parâmetro.")
@@ -109,7 +109,7 @@ public class VeiculoResource {
     }
 
     @POST
-    @Path("/comparacaoPorAno")
+    @Path("comparacaoPorAno")
     @Operation(summary = "Compara uma lista de Veículos e retorna o mais barato e mais caro por ano", description = "Compara uma lista de Veículos e retorna o mais barato e mais caro por ano. Passar List<Veiculo> como parâmetro.")
     public Map<Integer, Map<String, Veiculo>> comparaListaDeVeiculosPorAno(List<Veiculo> listaVeiculos) {
         System.out.println("here");
@@ -119,7 +119,7 @@ public class VeiculoResource {
     @POST
     @Transactional
     @Path("/{codigoFipe}/{marca}/{anoModelo}/{tipo}/{valor}/{combustivel}/{mesReferencia}/{siglaCombustivel}")
-    @Operation(summary = "Compara uma lista de Veículos e retorna o mais barato e mais caro", description = "Compara uma lista de Veículos e retorna o mais barato e mais caro. Passar List<Veiculo> como parâmetro.")
+    @Operation(summary = "Cria novo veículo", description = "Cria novo veículo.")
     public Response salvaNovoVeiculo(@PathParam("codigoFipe") String codigoFipe, @PathParam("marca") String marca,
             @QueryParam("modelo") String modelo, @PathParam("anoModelo") int anoModelo, @PathParam("tipo") int tipo,
             @PathParam("valor") String valor, @PathParam("combustivel") String combustivel,
@@ -150,7 +150,7 @@ public class VeiculoResource {
     @PUT
     @Path("/favorito/desfavoritar/{codigoFipe}")
     @Transactional
-    @Operation(summary = "Remove o veículo", description = "Remove o veículo.")
+    @Operation(summary = "Remove o veículo", description = "Desfavorita o veículo.")
     @Parameter(name = "codigoFipe", description = "primary key do Veiculo", required = true, example = "005340-6")
     public Veiculo desfavoritarVeiculo(@PathParam("codigoFipe") String codigoFipe) {
         Veiculo entity = Veiculo.findByCodigoFipe(codigoFipe);
