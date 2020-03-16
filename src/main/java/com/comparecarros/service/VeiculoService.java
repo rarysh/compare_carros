@@ -29,7 +29,8 @@ public class VeiculoService {
 
     public Map<String, Veiculo> comparaListaDeVeiculos(List<Veiculo> listaVeiculos) {
         Map<String, Veiculo> maiorMenor = new HashMap<>();
-        listaVeiculos = listaVeiculos.stream().sorted(Comparator.comparing(x -> x.getValorDouble())).collect(Collectors.toList());
+        listaVeiculos = listaVeiculos.stream().sorted(Comparator.comparing(x -> x.getValorDouble()))
+                .collect(Collectors.toList());
         maiorMenor.put("menorValor", listaVeiculos.get(0));
         maiorMenor.put("maiorValor", listaVeiculos.get(listaVeiculos.size() - 1));
         return maiorMenor;
@@ -37,7 +38,8 @@ public class VeiculoService {
 
     public Map<Integer, Map<String, Veiculo>> comparaListaDeVeiculosPorAno(List<Veiculo> listaVeiculos) {
         Map<Integer, Map<String, Veiculo>> maiorMenorPorAno = new HashMap<>();
-        Map<Integer, List<Veiculo>> mapPorAno = listaVeiculos.stream().sorted(Comparator.comparing(x -> x.getValorDouble()))
+        Map<Integer, List<Veiculo>> mapPorAno = listaVeiculos.stream()
+                .sorted(Comparator.comparing(x -> x.getValorDouble()))
                 .collect(Collectors.groupingBy(x -> x.AnoModelo, Collectors.toList()));
         for (Entry<Integer, List<Veiculo>> entry : mapPorAno.entrySet()) {
             Map<String, Veiculo> maiorMenor = new HashMap<>();
@@ -48,9 +50,7 @@ public class VeiculoService {
         return maiorMenorPorAno;
     }
 
-    @Transactional
-    public void onStartSalvaApiDados() {
-        List<Veiculo> listaParaPersistir = new ArrayList<>();
+    public void atualizarDadosAPI() {
         for (int i = 1; i <= 3; i++) {
             String veiculo = "";
             if (i == 1)
@@ -59,25 +59,39 @@ public class VeiculoService {
                 veiculo = Veiculo.MOTO;
             else if (i == 3)
                 veiculo = Veiculo.CAMINHAO;
-                List<Veiculo> listaMarcas = fipeService.getMarcas(veiculo);
-            // for (Veiculo x : listaMarcas) {
-                List<Veiculo> listaModelos = fipeService.getModelos(veiculo, listaMarcas.get(0).codigo).getModelos();
-                // for (Veiculo y : listaModelos) {
-                    List<Veiculo> listaAnos = fipeService.getAnos(veiculo, listaMarcas.get(0).codigo, listaModelos.get(0).codigo);
-                    // for (Veiculo z : listaAnos) {
-                        Veiculo entity = fipeService.getValor(veiculo, listaMarcas.get(0).codigo, listaModelos.get(0).codigo, listaAnos.get(0).codigo);
+            List<Veiculo> listaMarcas = fipeService.getMarcas(veiculo);
+            for (Veiculo x : listaMarcas) {
+                List<Veiculo> listaModelos = fipeService.getModelos(veiculo, x.codigo).getModelos();
+                for (Veiculo y : listaModelos) {
+                    List<Veiculo> listaAnos = fipeService.getAnos(veiculo, x.codigo, y.codigo);
+                    List<Veiculo> listaParaPersistir = new ArrayList<>();
+                    for (Veiculo z : listaAnos) {
+                        System.out.println("--");
+                        System.out.println(x.codigo);
+                        System.out.println(y.codigo);
+                        System.out.println(z.codigo);
+                        Veiculo entity = fipeService.getValor(veiculo, x.codigo, y.codigo, z.codigo);
                         if (Veiculo.findByCodigoFipe(entity.CodigoFipe) == null) {
                             listaParaPersistir.add(entity);
-                            System.out.println("add");
+                            System.out.println(listaParaPersistir.size()); 
                         }
-                    // }
-                // }
-            // }
+                    }
+                    System.out.println("iai");
+                    System.out.println(listaParaPersistir.size());
+                    persiste(listaParaPersistir);
+                }
+            }
         }
-        System.out.println("here");
-        for (Veiculo entity : listaParaPersistir){
+    }
+
+    @Transactional
+    public void persiste(List<Veiculo> listaParaPersistir) {
+        System.out.println(listaParaPersistir.size());
+        for (Veiculo entity : listaParaPersistir) {
+            System.out.println(entity.CodigoFipe);
             entity.persist();
         }
+        System.out.println(listaParaPersistir.size());
         LOGGER.info("Foram persistidos " + listaParaPersistir.size() + " veículos no banco de dados.");
     }
 }

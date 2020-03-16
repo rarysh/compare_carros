@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Compare Carros - Rarysh</title>
+    <title>Compare Veículo - Rarysh</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
@@ -16,6 +16,10 @@
             border-radius: 10px;
             margin-top: 80px !important;
         }
+
+        .display-none {
+            display: none;
+        }
     </style>
     <!-- Load AngularJS -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
@@ -24,49 +28,21 @@
         var app = angular.module("VeiculoService", []);
         //Controller Part
         app.controller("VeiculoServiceController", function ($scope, $http) {
-
-            $scope.veiculos = [];
-            $scope.veiculosFav = [];
-            _refreshPageData();
-
-            $scope.filtrar = function () {
-                $scope.url = "";
-                if ($scope.form.tipo != null) {
-                    $scope.url = $scope.url + $scope.form.tipo;
-                    if ($scope.form.marca != null) {
-                        $scope.url = $scope.url + "/" + $scope.form.marca;
-                        $scope.urlAux = $scope.url;
-                        if ($scope.form.modelo != null) {
-                            $scope.url = $scope.url + "/modelo?modelo=" + $scope.form.modelo;
-                            if ($scope.form.ano != null) {
-                                $scope.url = $scope.urlAux + "/" + $scope.form.ano + "?modelo=" + $scope.form.modelo;
-                            }
-                        }
-                    }
-                }
-                console.log($scope.url);
+            $scope.add = function () {
+                $scope.url = $scope.form.codigoFipe + "/" + $scope.form.marca + "/" + $scope.form.anoModelo + "/" + $scope.form.tipo + "/" + $scope.form.valor + "/" + $scope.form.combustivel + "/" + $scope.form.mesReferencia + "/" + $scope.form.siglaCombustivel + "?modelo=" + $scope.form.modelo;
                 $http({
-                    method: 'GET',
+                    method: 'POST',
                     url: '/veiculo/' + $scope.url
                 }).then(function successCallback(response) {
-                    $scope.veiculos = response.data;
+                    console.log("sucess");
+                    $("#alert").show();
+                    setTimeout(() => { $("#alert").hide(); }, 5000);
                 }, function errorCallback(response) {
-                    console.log(response.statusText);
+                    console.log("error");
                 });
             };
-
-            function _refreshPageData() {
-                $http({
-                    method: 'GET',
-                    url: '/veiculo/favorito'
-                }).then(function successCallback(response) {
-                    $scope.veiculosFav = response.data;
-                }, function errorCallback(response) {
-                    console.log(response.statusText);
-                });
-            }
-
         });
+
     </script>
 </head>
 
@@ -78,18 +54,22 @@
                 <a class="navbar-text nav-item nav-link" href="/">Home</a>
                 <a class="navbar-text nav-item nav-link active" href="add.html">Adicionar Veículo<span
                         class="sr-only">(current)</span></a>
-                <a class="navbar-text nav-item nav-link btn btn-primary text-white" href="#">Atualizar dados API</a>
+                <button class="navbar-text nav-item nav-link btn btn-primary text-white" ng-click="atualizarDadosAPI()">
+                    <span class="glyphicon glyphicon-refresh"></span> Atualizar dados API</a>
             </div>
         </div>
     </nav>
 
     <div class="container mt-4 p-5">
 
+        <div id="alert" class="display-none alert alert-success" role="alert">
+            Veículo criado com sucesso
+        </div>
         <h3>Adicionar novo veículo</h3>
         <form class="row mt-4" ng-submit="add()">
             <div class="form-group col-4">
                 <label for="tipoVeiculo">Tipo de Veículo <span class="text-danger">*</span> </label>
-                <select class="form-control" placeholder="Tipo" ng-model="form.tipo" required/>
+                <select class="form-control" placeholder="Tipo" ng-model="form.tipo" required />
                 <option value="" disabled selected>Selecione o tipo</option>
                 <option value="1">Carro</option>
                 <option value="2">Moto</option>

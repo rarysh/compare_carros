@@ -31,9 +31,12 @@ public class VeiculoResource {
     @Inject
     VeiculoService veiculoService;
 
-    // public void onStartSalvaApiDados(@Observes StartupEvent ev) {
-    // veiculoService.onStartSalvaApiDados();
-    // }
+    @GET
+    @Path("atualizarDadosAPI")
+    public void atualizarDadosAPI() {
+        System.out.println("ni");
+        veiculoService.atualizarDadosAPI();
+    }
 
     public void invalidaTipoVeiculo(int tipoVeiculo) {
         if (tipoVeiculo < 1 || tipoVeiculo > 3)
