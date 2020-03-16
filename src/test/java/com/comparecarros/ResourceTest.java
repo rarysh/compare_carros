@@ -92,14 +92,9 @@ public class ResourceTest {
                                 .post("/veiculo/{codigoFipe}/{marca}/{anoModelo}/{tipo}/{valor}/{combustivel}/{mesReferencia}/{siglaCombustivel}")
                                 .then().statusCode(201).extract().body().jsonPath();
 
-                given().queryParam("modelo", modelo)
-                                .pathParams("codigoFipe", codigoFipe, "marca", marca, "anoModelo", anoModelo, "tipo",
-                                                tipo, "valor", valor, "combustivel", combustivel, "mesReferencia",
-                                                mesReferencia, "siglaCombustivel", siglaCombustivel)
-                                .when()
-                                .post("/veiculo/{codigoFipe}/{marca}/{anoModelo}/{tipo}/{valor}/{combustivel}/{mesReferencia}/{siglaCombustivel}")
-                                .then().statusCode(409);
+                long id = responsePost.getLong("id");
 
+                assertEquals(responsePost.getLong("id"), id);
                 assertEquals(responsePost.getString("CodigoFipe"), codigoFipe);
                 assertEquals(responsePost.getString("Marca"), marca);
                 assertEquals(responsePost.getString("Modelo"), modelo);
@@ -111,10 +106,11 @@ public class ResourceTest {
                 assertEquals(responsePost.getInt("AnoModelo"), anoModelo);
                 assertEquals(responsePost.getBoolean("favorito"), false);
 
-                JsonPath responseGet = given().pathParams("codigoFipe", codigoFipe).when()
-                                .get("/veiculo/codigoFipe/{codigoFipe}").then().statusCode(200).extract().body()
+                JsonPath responseGet = given().pathParams("id", id).when()
+                                .get("/veiculo/codigoFipe/{id}").then().statusCode(200).extract().body()
                                 .jsonPath();
 
+                assertEquals(responseGet.getLong("id"), id);
                 assertEquals(responseGet.getString("CodigoFipe"), codigoFipe);
                 assertEquals(responseGet.getString("Marca"), marca);
                 assertEquals(responseGet.getString("Modelo"), modelo);
@@ -126,10 +122,11 @@ public class ResourceTest {
                 assertEquals(responseGet.getInt("AnoModelo"), anoModelo);
                 assertEquals(responseGet.getBoolean("favorito"), false);
 
-                JsonPath responseUpdate = given().pathParams("codigoFipe", codigoFipe).when()
-                                .put("/veiculo/favorito/favoritar/{codigoFipe}").then().statusCode(200).extract().body()
+                JsonPath responseUpdate = given().pathParams("id", id).when()
+                                .put("/veiculo/favorito/favoritar/{id}").then().statusCode(200).extract().body()
                                 .jsonPath();
 
+                assertEquals(responseUpdate.getLong("id"), id);
                 assertEquals(responseUpdate.getString("CodigoFipe"), codigoFipe);
                 assertEquals(responseUpdate.getString("Marca"), marca);
                 assertEquals(responseUpdate.getString("Modelo"), modelo);
@@ -141,10 +138,11 @@ public class ResourceTest {
                 assertEquals(responseUpdate.getInt("AnoModelo"), anoModelo);
                 assertEquals(responseUpdate.getBoolean("favorito"), true);
 
-                JsonPath responseDelete = given().pathParams("codigoFipe", codigoFipe).when()
-                                .put("/veiculo/favorito/desfavoritar/{codigoFipe}").then().statusCode(200).extract()
+                JsonPath responseDelete = given().pathParams("id", id).when()
+                                .put("/veiculo/favorito/desfavoritar/{id}").then().statusCode(200).extract()
                                 .body().jsonPath();
 
+                assertEquals(responseDelete.getLong("id"), id);
                 assertEquals(responseDelete.getString("CodigoFipe"), codigoFipe);
                 assertEquals(responseDelete.getString("Marca"), marca);
                 assertEquals(responseDelete.getString("Modelo"), modelo);
@@ -156,7 +154,7 @@ public class ResourceTest {
                 assertEquals(responseDelete.getInt("AnoModelo"), anoModelo);
                 assertEquals(responseDelete.getBoolean("favorito"), false);
 
-                given().pathParams("codigoFipe", codigoFipe).when().delete("/veiculo/{codigoFipe}").then()
+                given().pathParams("id", id).when().delete("/veiculo/{id}").then()
                                 .statusCode(204);
         }
 
