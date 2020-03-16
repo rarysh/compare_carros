@@ -88,14 +88,6 @@ public class VeiculoResource {
     }
 
     @GET
-    @Path("codigoFipe/{codigoFipe}")
-    @Operation(summary = "Busca veículo por codigoFipe", description = "Busca veículo por codigoFipe.")
-    @Parameter(name = "codigoFipe", description = "primary key do Veiculo", required = true, example = "005340-6")
-    public Veiculo getValor(@PathParam("codigoFipe") String codigoFipe) {
-        return Veiculo.findByCodigoFipe(codigoFipe);
-    }
-
-    @GET
     @Path("favorito")
     @Operation(summary = "Lista veículos favoritos", description = "Lista veículos favoritos.")
     public List<Veiculo> listaVeiculoFavorito() {
@@ -127,9 +119,6 @@ public class VeiculoResource {
             @QueryParam("modelo") String modelo, @PathParam("anoModelo") int anoModelo, @PathParam("tipo") int tipo,
             @PathParam("valor") String valor, @PathParam("combustivel") String combustivel,
             @PathParam("mesReferencia") String mesReferencia, @PathParam("siglaCombustivel") String siglaCombustivel) {
-        if (Veiculo.findByCodigoFipe(codigoFipe) != null) {
-            throw new WebApplicationException("Veículo com codigoFipe " + codigoFipe + " já existe.", 409);
-        }
         Veiculo entity = new Veiculo(codigoFipe, marca, modelo, anoModelo, tipo, valor, combustivel, mesReferencia,
                 siglaCombustivel);
         entity.persist();
@@ -138,11 +127,11 @@ public class VeiculoResource {
 
     @PUT
     @Transactional
-    @Path("/favorito/favoritar/{codigoFipe}")
+    @Path("/favorito/favoritar/{id}")
     @Operation(summary = "Salva veículo como favorito", description = "Salva veículo como favorito.")
-    @Parameter(name = "codigoFipe", description = "primary key do Veiculo", required = true, example = "005340-6")
-    public Veiculo salvarVeiculoFavorito(@PathParam("codigoFipe") String codigoFipe) {
-        Veiculo entity = Veiculo.findByCodigoFipe(codigoFipe);
+    @Parameter(name = "id", description = "primary key do Veiculo", required = true, example = "005340-6")
+    public Veiculo salvarVeiculoFavorito(@PathParam("id") long id) {
+        Veiculo entity = Veiculo.findById(id);
         if (entity.favorito) {
             throw new WebApplicationException("Veículo já favoritado.", 409);
         }
@@ -151,28 +140,28 @@ public class VeiculoResource {
     }
 
     @PUT
-    @Path("/favorito/desfavoritar/{codigoFipe}")
+    @Path("/favorito/desfavoritar/{id}")
     @Transactional
     @Operation(summary = "Remove o veículo", description = "Desfavorita o veículo.")
-    @Parameter(name = "codigoFipe", description = "primary key do Veiculo", required = true, example = "005340-6")
-    public Veiculo desfavoritarVeiculo(@PathParam("codigoFipe") String codigoFipe) {
-        Veiculo entity = Veiculo.findByCodigoFipe(codigoFipe);
+    @Parameter(name = "id", description = "primary key do Veiculo", required = true, example = "005340-6")
+    public Veiculo desfavoritarVeiculo(@PathParam("id") long id) {
+        Veiculo entity = Veiculo.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Veículo com codigoFipe de " + codigoFipe + " não existe.", 404);
+            throw new WebApplicationException("Veículo com codigoFipe de " + id + " não existe.", 404);
         }
         entity.favorito = false;
         return entity;
     }
 
     @DELETE
-    @Path("{codigoFipe}")
+    @Path("{id}")
     @Transactional
     @Operation(summary = "Remove o veículo", description = "Remove o veículo.")
-    @Parameter(name = "codigoFipe", description = "primary key do Veiculo", required = true, example = "005340-6")
-    public Response deletarVeiculo(@PathParam("codigoFipe") String codigoFipe) {
-        Veiculo entity = Veiculo.findByCodigoFipe(codigoFipe);
+    @Parameter(name = "id", description = "primary key do Veiculo", required = true, example = "005340-6")
+    public Response deletarVeiculo(@PathParam("id") String id) {
+        Veiculo entity = Veiculo.findById(id);
         if (entity == null) {
-            throw new WebApplicationException("Veículo com codigoFipe de " + codigoFipe + " não existe.", 404);
+            throw new WebApplicationException("Veículo com codigoFipe de " + id + " não existe.", 404);
         }
         entity.delete();
         return Response.status(204).build();

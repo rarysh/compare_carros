@@ -71,12 +71,12 @@ public class VeiculoService {
                         System.out.println(y.codigo);
                         System.out.println(z.codigo);
                         Veiculo entity = fipeService.getValor(veiculo, x.codigo, y.codigo, z.codigo);
-                        if (Veiculo.findByCodigoFipe(entity.CodigoFipe) == null) {
+                        if (Veiculo.findByTipoMarcaModeloAno(i, x.nome, y.nome,
+                                Integer.parseInt(z.nome.substring(0, 4))) == null) {
                             listaParaPersistir.add(entity);
-                            System.out.println(listaParaPersistir.size()); 
+                            System.out.println(listaParaPersistir.size());
                         }
                     }
-                    System.out.println("iai");
                     System.out.println(listaParaPersistir.size());
                     persiste(listaParaPersistir);
                 }

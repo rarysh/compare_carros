@@ -6,12 +6,11 @@ import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
 @Cacheable
@@ -20,9 +19,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 		@Index(columnList = "tipo", name = "veiculo_tipo_hidx"),
 		@Index(columnList = "ano_modelo", name = "veiculo_ano_modelo_hidx"),
 		@Index(columnList = "favorito", name = "veiculo_favorito_hidx") })
-public class Veiculo extends PanacheEntityBase {
+public class Veiculo extends PanacheEntity {
 
-	@Id
 	@Column(name = "codigo_fipe")
 	public String CodigoFipe;
 	@Column(name = "marca")
@@ -71,12 +69,7 @@ public class Veiculo extends PanacheEntityBase {
 
 	@JsonbTransient
 	public double getValorDouble() {
-		return Double
-				.parseDouble(this.Valor.substring(3, this.Valor.length()).replace(".", "").replace(",", "."));
-	}
-
-	public static Veiculo findByCodigoFipe(String codigoFipe) {
-		return find("CodigoFipe", codigoFipe).firstResult();
+		return Double.parseDouble(this.Valor.substring(3, this.Valor.length()).replace(".", "").replace(",", "."));
 	}
 
 	public static List<Veiculo> listAnos(int tipoVeiculo, String marca, String modelo) {
@@ -98,5 +91,10 @@ public class Veiculo extends PanacheEntityBase {
 
 	public static List<Veiculo> listMarcas(int tipoVeiculo) {
 		return list("TipoVeiculo", tipoVeiculo);
+	}
+
+	public static Veiculo findByTipoMarcaModeloAno(int tipoVeiculo, String marca, String modelo, int anoModelo) {
+		return find("Tipo = ?1 and Marca = ?2 and Modelo = ?3 and AnoModelo = ?4", tipoVeiculo, marca, modelo,
+				anoModelo).firstResult();
 	}
 }
