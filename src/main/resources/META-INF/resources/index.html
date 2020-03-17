@@ -23,7 +23,28 @@
     <!-- Load AngularJS -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <script type="text/javascript">
-
+        function tipo() {
+            $("#marca").show();
+        }
+        function marca() {
+            setTimeout(() => {
+                if ($("#marca-input").val().length >= 0)
+                    $("#modelo").show();
+                if ($("#marca-input").val().length == 0) {
+                    $("#ano").hide();
+                    $("#modelo").hide();
+                }
+            }, 10);
+        }
+        function modelo() {
+            setTimeout(() => {
+                if ($("#modelo-input").val().length > 0)
+                    $("#ano").show();
+                if ($("#modelo-input").val().length == 0) {
+                    $("#ano").hide();
+                }
+            }, 10);
+        }
         var app = angular.module("VeiculoService", []);
         //Controller Part
         app.controller("VeiculoServiceController", function ($scope, $http) {
@@ -47,9 +68,13 @@
                         }
                     }
                 }
+                $scope.form.tipo = null;
                 $scope.form.anoModelo = null;
                 $scope.form.modelo = null;
                 $scope.form.marca = null;
+                $("#marca").hide();
+                $("#modelo").hide();
+                $("#ano").hide();
                 $http({
                     method: 'GET',
                     url: '/veiculo/' + $scope.url
@@ -137,28 +162,31 @@
         </div>
         <h3>Filtrar veículos</h3>
         <form class="mt-4 mb-4 row" ng-submit="filtrar()">
-            <div class="col-8">
+            <div class="col-12">
                 <div class="row">
-                    <div class="form-group col-6">
-                        <label for="tipoVeiculo">Tipo de Veículo <span class="text-danger">*</span> </label>
-                        <select class="form-control" placeholder="Tipo" ng-model="form.tipo" />
+                    <div class="form-group col-3">
+                        <label for="tipoVeiculo">Tipo de Veículo </label>
+                        <select class="form-control" placeholder="Tipo" onchange="tipo()" ng-model="form.tipo" />
                         <option value="" disabled selected>Selecione o tipo</option>
                         <option value="1">Carro</option>
                         <option value="2">Moto</option>
                         <option value="3">Caminhão</option>
                         </select>
                     </div>
-                    <div id="marca" class="form-group col-6 ">
-                        <label for="marca">Marca <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" placehOlder="Acura" ng-model="form.marca" />
+                    <div id="marca" class="form-group col-3 display-none">
+                        <label for="marca">Marca </label>
+                        <input id="marca-input" class="form-control" type="text" onkeyup="marca()" onkeypress="marca()"
+                            placehOlder="Acura" ng-model="form.marca" />
                     </div>
-                    <div id="modelo" class="form-group col-6 ">
-                        <label for="modelo">Modelo <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" placeholder="Integra GS 1.8" ng-model="form.modelo" />
+                    <div id="modelo" class="form-group col-3 display-none">
+                        <label for="modelo">Modelo </label>
+                        <input id="modelo-input" class="form-control" type="text" onkeyup="modelo()" onkeypress="modelo()"
+                            placeholder="Integra GS 1.8" ng-model="form.modelo" />
                     </div>
-                    <div id="ano" class="form-group col-6 ">
-                        <label for="anoModelo">AnoModelo <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" placeholder="1992" ng-model="form.anoModelo" />
+                    <div id="ano" class="form-group col-3 display-none">
+                        <label for="anoModelo">AnoModelo </label>
+                        <input id="ano-input" class="form-control" type="text" placeholder="1992"
+                            ng-model="form.anoModelo" />
                     </div>
                 </div>
             </div>
