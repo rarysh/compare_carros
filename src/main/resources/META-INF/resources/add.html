@@ -14,7 +14,6 @@
         .container {
             background-color: rgb(247, 247, 247);
             border-radius: 10px;
-            margin-top: 80px !important;
         }
 
         .display-none {
@@ -34,11 +33,10 @@
                     method: 'POST',
                     url: '/veiculo/' + $scope.url
                 }).then(function successCallback(response) {
-                    console.log("sucess");
                     $("#alert").show();
                     setTimeout(() => { $("#alert").hide(); }, 5000);
                 }, function errorCallback(response) {
-                    console.log("error");
+                    console.log(response.statusText);
                 });
             };
         });
@@ -47,13 +45,15 @@
 </head>
 
 <body ng-app="VeiculoService" ng-controller="VeiculoServiceController">
-    <nav class="navbar navbar-fixed-top navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <span class="navbar-brand font-weight-bold">Compare Veículo</span>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a class="navbar-text nav-item nav-link" href="/">Home</a>
                 <a class="navbar-text nav-item nav-link active" href="add.html">Adicionar Veículo<span
                         class="sr-only">(current)</span></a>
+                <a class="navbar-text nav-item nav-link" href="fav.html">Ver veículos favoritos</a>
+                <a class="navbar-text nav-item nav-link" href="comp.html">Ver comparações</a>
                 <button class="navbar-text nav-item nav-link btn btn-primary text-white" ng-click="atualizarDadosAPI()">
                     <span class="glyphicon glyphicon-refresh"></span> Atualizar dados API</a>
             </div>

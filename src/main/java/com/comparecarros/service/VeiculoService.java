@@ -66,18 +66,12 @@ public class VeiculoService {
                     List<Veiculo> listaAnos = fipeService.getAnos(veiculo, x.codigo, y.codigo);
                     List<Veiculo> listaParaPersistir = new ArrayList<>();
                     for (Veiculo z : listaAnos) {
-                        System.out.println("--");
-                        System.out.println(x.codigo);
-                        System.out.println(y.codigo);
-                        System.out.println(z.codigo);
                         Veiculo entity = fipeService.getValor(veiculo, x.codigo, y.codigo, z.codigo);
                         if (Veiculo.findByTipoMarcaModeloAno(i, x.nome, y.nome,
                                 Integer.parseInt(z.nome.substring(0, 4))) == null) {
                             listaParaPersistir.add(entity);
-                            System.out.println(listaParaPersistir.size());
                         }
                     }
-                    System.out.println(listaParaPersistir.size());
                     persiste(listaParaPersistir);
                 }
             }
@@ -86,12 +80,9 @@ public class VeiculoService {
 
     @Transactional
     public void persiste(List<Veiculo> listaParaPersistir) {
-        System.out.println(listaParaPersistir.size());
         for (Veiculo entity : listaParaPersistir) {
-            System.out.println(entity.CodigoFipe);
             entity.persist();
         }
-        System.out.println(listaParaPersistir.size());
         LOGGER.info("Foram persistidos " + listaParaPersistir.size() + " veículos no banco de dados.");
     }
 }

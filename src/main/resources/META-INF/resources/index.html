@@ -14,7 +14,6 @@
         .container {
             background-color: rgb(247, 247, 247);
             border-radius: 10px;
-            margin-top: 80px !important;
         }
 
         .display-none {
@@ -30,11 +29,10 @@
         app.controller("VeiculoServiceController", function ($scope, $http) {
 
             $scope.veiculos = [];
-            $scope.veiculosFav = [];
-            // _refreshPageData();
 
             $scope.filtrar = function () {
                 $scope.url = "";
+                $scope.flagValor = 0;
                 if ($scope.form.tipo != null) {
                     $scope.url = $scope.url + $scope.form.tipo;
                     if ($scope.form.marca != null) {
@@ -42,96 +40,98 @@
                         $scope.urlAux = $scope.url;
                         if ($scope.form.modelo != null) {
                             $scope.url = $scope.url + "/modelo?modelo=" + $scope.form.modelo;
-                            if ($scope.form.ano != null) {
-                                $scope.url = $scope.urlAux + "/" + $scope.form.ano + "?modelo=" + $scope.form.modelo;
+                            if ($scope.form.anoModelo != null) {
+                                $scope.url = $scope.urlAux + "/" + $scope.form.anoModelo + "?modelo=" + $scope.form.modelo;
+                                $scope.flagValor = 1;
                             }
                         }
                     }
                 }
+                $scope.form.anoModelo = null;
+                $scope.form.modelo = null;
+                $scope.form.marca = null;
                 $http({
                     method: 'GET',
                     url: '/veiculo/' + $scope.url
                 }).then(function successCallback(response) {
-                    $scope.veiculos = response.data;
+                    if ($scope.flagValor == 1) {
+                        var veiculosAux = [];
+                        veiculosAux.push(response.data);
+                        $scope.veiculos = veiculosAux;
+                    }
+                    else {
+                        $scope.veiculos = response.data;
+                    }
                 }, function errorCallback(response) {
                     console.log(response.statusText);
                 });
             };
 
-            $scope.favoritar = function (codigoFipe) {
+            $scope.favoritar = function (id) {
                 $http({
                     method: 'PUT',
-                    url: '/veiculo/favorito/favoritar/' + codigoFipe
+                    url: '/veiculo/favorito/favoritar/' + id
                 }).then(function successCallback(response) {
-                    $("#fav-" + codigoFipe).hide();
-                    $("#desfav-" + codigoFipe).css("display", "block")
-                    _refreshPageData();
+                    $("#desfav-" + id).show();
+                    $("#fav-" + id).hide();
                 }, function errorCallback(response) {
+                    console.log(response.statusText);
                 });
             };
-            $scope.desfavoritar = function (codigoFipe) {
+            $scope.desfavoritar = function (id) {
                 $http({
                     method: 'PUT',
-                    url: '/veiculo/favorito/desfavoritar/' + codigoFipe
+                    url: '/veiculo/favorito/desfavoritar/' + id
                 }).then(function successCallback(response) {
-                    $("#desfav-" + codigoFipe).hide();
-                    $("#fav-" + codigoFipe).show();
-                    $("#f-" + codigoFipe).hide();
+                    $("#desfav-" + id).hide();
+                    $("#fav-" + id).show();
                 }, function errorCallback(response) {
+                    console.log(response.statusText);
                 });
             };
 
-            $scope.remove = function (codigoFipe) {
+            $scope.remove = function (id) {
                 $http({
                     method: 'DELETE',
-                    url: '/veiculo/' + codigoFipe
+                    url: '/veiculo/' + id
                 }).then(function successCallback(response) {
-                    $("#f-" + codigoFipe).hide();
-                    $("#v-" + codigoFipe).hide();
+                    $("#v-" + id).hide();
                     $("#alert").show();
                     setTimeout(() => { $("#alert").hide(); }, 5000);
                 }, function errorCallback(response) {
+                    console.log(response.statusText);
                 });
             };
             $scope.atualizarDadosAPI = function () {
-                console.log("here");
                 $http({
                     method: 'GET',
                     url: '/veiculo/atualizarDadosAPI'
                 }).then(function successCallback(response) {
                 }, function errorCallback(response) {
-                });
-            };
-
-            function _refreshPageData() {
-                $http({
-                    method: 'GET',
-                    url: '/veiculo/favorito'
-                }).then(function successCallback(response) {
-                    $scope.veiculosFav = response.data;
-                }, function errorCallback(response) {
                     console.log(response.statusText);
                 });
-            }
+            };
 
         });
     </script>
 </head>
 
 <body ng-app="VeiculoService" ng-controller="VeiculoServiceController">
-    <nav class="navbar navbar-fixed-top navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <span class="navbar-brand font-weight-bold">Compare Veículo</span>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a class="navbar-text nav-item nav-link active" href="/">Home<span class="sr-only">(current)</span></a>
                 <a class="navbar-text nav-item nav-link" href="add.html">Adicionar Veículo</a>
+                <a class="navbar-text nav-item nav-link" href="fav.html">Ver veículos favoritos</a>
+                <a class="navbar-text nav-item nav-link" href="comp.html">Ver comparações</a>
                 <button class="navbar-text nav-item nav-link btn btn-primary text-white" ng-click="atualizarDadosAPI()">
                     <span class="glyphicon glyphicon-refresh"></span> Atualizar dados API</a>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4 p-4">
+    <div class="container mt-4 p-5">
         <div id="alert" class="display-none alert alert-success" role="alert">
             Veículo deletado com sucesso
         </div>
@@ -148,15 +148,15 @@
                         <option value="3">Caminhão</option>
                         </select>
                     </div>
-                    <div class="form-group col-6">
+                    <div id="marca" class="form-group col-6 ">
                         <label for="marca">Marca <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" placeholder="Acura" ng-model="form.marca" />
+                        <input class="form-control" type="text" placehOlder="Acura" ng-model="form.marca" />
                     </div>
-                    <div class="form-group col-6">
+                    <div id="modelo" class="form-group col-6 ">
                         <label for="modelo">Modelo <span class="text-danger">*</span></label>
                         <input class="form-control" type="text" placeholder="Integra GS 1.8" ng-model="form.modelo" />
                     </div>
-                    <div class="form-group col-6">
+                    <div id="ano" class="form-group col-6 ">
                         <label for="anoModelo">AnoModelo <span class="text-danger">*</span></label>
                         <input class="form-control" type="text" placeholder="1992" ng-model="form.anoModelo" />
                     </div>
@@ -186,7 +186,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="veiculo in veiculos" id="v-{{ veiculo.CodigoFipe }}">
+                <tr ng-repeat="veiculo in veiculos" id="v-{{ veiculo.id }}">
                     <td>{{ veiculo.CodigoFipe }}</th>
                     <td>{{ veiculo.TipoVeiculo }}</td>
                     <td>{{ veiculo.Marca }}</td>
@@ -196,133 +196,22 @@
                     <td>{{ veiculo.MesReferencia }}</td>
                     <td>{{ veiculo.Valor }}</td>
                     <td>
-                        <button id="fav-{{ veiculo.CodigoFipe }}" type="button" class="btn btn-default btn-sm"
-                            ng-click="favoritar(veiculo.CodigoFipe)">
+                        <button id="fav-{{ veiculo.id }}" type="button" class="btn btn-default btn-sm"
+                            ng-click="favoritar(veiculo.id)">
                             <span class="glyphicon glyphicon-star-empty"></span> Favoritar
                         </button>
-                        <button id="desfav-{{ veiculo.CodigoFipe }}" type="button"
-                            class="display-none btn btn-primary btn-sm" ng-click="desfavoritar(veiculo.CodigoFipe)">
+                        <button id="desfav-{{ veiculo.id }}" type="button" class="display-none btn btn-primary btn-sm"
+                            ng-click="desfavoritar(veiculo.id)">
                             <span class="glyphicon glyphicon-star"></span> Desfavoritar
                         </button>
-                        <button id="comp-{{ veiculo.CodigoFipe }}" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-signal"></span> Comparar
-                        </button>
-                        <button id="rm-{{ veiculo.CodigoFipe }}" type="button" class="btn btn-danger btn-sm"
-                            ng-click="remove(veiculo.CodigoFipe)">
+                        <button id="rm-{{ veiculo.id }}" type="button" class="btn btn-danger btn-sm"
+                            ng-click="remove(veiculo.id)">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button></td>
                 </tr>
             </tbody>
         </table>
 
-        <h3>Lista de veículos favoritos</h3>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">CodigoFipe</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Marca</th>
-                    <th scope="col">Modelo</th>
-                    <th scope="col">Ano</th>
-                    <th scope="col">Combustivel</th>
-                    <th scope="col">MesReferencia</th>
-                    <th scope="col">Valor</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="veiculo in veiculosFav" id="f-{{ veiculo.CodigoFipe }}">
-                    <td>{{ veiculo.CodigoFipe }}</th>
-                    <td>{{ veiculo.TipoVeiculo }}</td>
-                    <td>{{ veiculo.Marca }}</td>
-                    <td>{{ veiculo.Modelo }}</td>
-                    <td>{{ veiculo.AnoModelo }}</td>
-                    <td>{{ veiculo.Combustivel }}</td>
-                    <td>{{ veiculo.MesReferencia }}</td>
-                    <td>{{ veiculo.Valor }}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-sm"
-                            ng-click="desfavoritar(veiculo.CodigoFipe)">
-                            <span class="glyphicon glyphicon-star"></span> Desfavoritar
-                        </button>
-                        <button id="comp-{{ veiculo.CodigoFipe }}" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-signal"></span> Comparar
-                        </button></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Comparação</h3>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Posição</th>
-                    <th scope="col">CodigoFipe</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Marca</th>
-                    <th scope="col">Modelo</th>
-                    <th scope="col">Ano</th>
-                    <th scope="col">Combustivel</th>
-                    <th scope="col">MesReferencia</th>
-                    <th scope="col">Valor</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="veiculo in veiculosFav">
-                    <td>{{ veiculo.CodigoFipe }}</th>
-                    <td>{{ veiculo.CodigoFipe }}</th>
-                    <td>{{ veiculo.TipoVeiculo }}</td>
-                    <td>{{ veiculo.Marca }}</td>
-                    <td>{{ veiculo.Modelo }}</td>
-                    <td>{{ veiculo.AnoModelo }}</td>
-                    <td>{{ veiculo.Combustivel }}</td>
-                    <td>{{ veiculo.MesReferencia }}</td>
-                    <td>{{ veiculo.Valor }}</td>
-                    <td>
-                        <button class="rem-{{ veiculo.CodigoFipe }}" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-signal"></span> Remover
-                        </button></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Comparação por ano</h3>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Ano</th>
-                    <th scope="col">Posição</th>
-                    <th scope="col">CodigoFipe</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Marca</th>
-                    <th scope="col">Modelo</th>
-                    <th scope="col">Ano</th>
-                    <th scope="col">Combustivel</th>
-                    <th scope="col">MesReferencia</th>
-                    <th scope="col">Valor</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="veiculo in veiculosFav">
-                    <td>{{ veiculo.ano }}</th>
-                    <td>{{ veiculo.posicao }}</th>
-                    <td>{{ veiculo.CodigoFipe }}</th>
-                    <td>{{ veiculo.TipoVeiculo }}</td>
-                    <td>{{ veiculo.Marca }}</td>
-                    <td>{{ veiculo.Modelo }}</td>
-                    <td>{{ veiculo.AnoModelo }}</td>
-                    <td>{{ veiculo.Combustivel }}</td>
-                    <td>{{ veiculo.MesReferencia }}</td>
-                    <td>{{ veiculo.Valor }}</td>
-                    <td>
-                        <button class="rem-{{ veiculo.CodigoFipe }}" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-remove"></span> Remover
-                        </button></td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </body>
 

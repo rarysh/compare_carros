@@ -106,22 +106,6 @@ public class ResourceTest {
                 assertEquals(responsePost.getInt("AnoModelo"), anoModelo);
                 assertEquals(responsePost.getBoolean("favorito"), false);
 
-                JsonPath responseGet = given().pathParams("id", id).when()
-                                .get("/veiculo/codigoFipe/{id}").then().statusCode(200).extract().body()
-                                .jsonPath();
-
-                assertEquals(responseGet.getLong("id"), id);
-                assertEquals(responseGet.getString("CodigoFipe"), codigoFipe);
-                assertEquals(responseGet.getString("Marca"), marca);
-                assertEquals(responseGet.getString("Modelo"), modelo);
-                assertEquals(responseGet.getString("Combustivel"), combustivel);
-                assertEquals(responseGet.getString("Valor"), valor);
-                assertEquals(responseGet.getString("MesReferencia"), mesReferencia);
-                assertEquals(responseGet.getString("SiglaCombustivel"), siglaCombustivel);
-                assertEquals(responseGet.getInt("TipoVeiculo"), tipo);
-                assertEquals(responseGet.getInt("AnoModelo"), anoModelo);
-                assertEquals(responseGet.getBoolean("favorito"), false);
-
                 JsonPath responseUpdate = given().pathParams("id", id).when()
                                 .put("/veiculo/favorito/favoritar/{id}").then().statusCode(200).extract().body()
                                 .jsonPath();

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Veículo - Rarysh</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .container {
+            background-color: rgb(247, 247, 247);
+            border-radius: 10px;
+        }
+
+        .display-none {
+            display: none;
+        }
+    </style>
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+
+        var app = angular.module("VeiculoService", []);
+        //Controller Part
+        app.controller("VeiculoServiceController", function ($scope, $http) {
+
+            $scope.comp = [];
+            $scope.compAno = [];
+            _refreshPageData();
+
+            function _refreshPageData() {
+                $http({
+                    method: 'GET',
+                    url: '/veiculo/favorito'
+                }).then(function successCallback(response) {
+                    $http({
+                        method: 'POST',
+                        url: '/veiculo/comparacao',
+                        data: response.data
+                    }).then(function successCallback(responseComp) {
+                        $scope.compMenor = responseComp.data["menorValor"];
+                        $scope.compMaior = responseComp.data["maiorValor"];
+                        $scope.compMenor.Posicao = "Menor Valor";
+                        $scope.compMaior.Posicao = "Maior Valor";
+                        $scope.comp.push($scope.compMenor);
+                        $scope.comp.push($scope.compMaior);
+                    }, function errorCallback(response) {
+                        console.log(response.statusText);
+                    });
+
+                    $http({
+                        method: 'POST',
+                        url: '/veiculo/comparacaoPorAno',
+                        data: response.data
+                    }).then(function successCallback(responseComp) {
+                        for (var i in responseComp.data) {
+                            $scope.compMenor = responseComp.data[i]["menorValor"];
+                            $scope.compMaior = responseComp.data[i]["maiorValor"];
+                            $scope.compMenor.ano = i;
+                            $scope.compMenor.Posicao = "Menor Valor";
+                            $scope.compMaior.ano = i;
+                            $scope.compMaior.Posicao = "Maior Valor";
+                            $scope.compAno.push($scope.compMenor);
+                            $scope.compAno.push($scope.compMaior);
+                        }
+                    }, function errorCallback(response) {
+                        console.log(response.statusText);
+                    });
+                }, function errorCallback(response) {
+                    console.log(response.statusText);
+                });
+            }
+        });
+
+    </script>
+</head>
+
+<body ng-app="VeiculoService" ng-controller="VeiculoServiceController">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <span class="navbar-brand font-weight-bold">Compare Veículo</span>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="navbar-text nav-item nav-link" href="/">Home</a>
+                <a class="navbar-text nav-item nav-link" href="add.html">Adicionar Veículo</a>
+                <a class="navbar-text nav-item nav-link" href="fav.html">Ver veículos favoritos</a>
+                <a class="navbar-text nav-item nav-link active" href="comp.html">Ver comparações<span
+                        class="sr-only">(current)</span></a>
+                <button class="navbar-text nav-item nav-link btn btn-primary text-white" ng-click="atualizarDadosAPI()">
+                    <span class="glyphicon glyphicon-refresh"></span> Atualizar dados API</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 p-5">
+
+        <h3>Comparação</h3>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">AnoModelo</th>
+                    <th scope="col">Posição</th>
+                    <th scope="col">CodigoFipe</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Combustivel</th>
+                    <th scope="col">Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="veiculo in comp">
+                    <td>{{ veiculo.AnoModelo }}</td>
+                    <td><b>{{ veiculo.Posicao }}</b></td>
+                    <td>{{ veiculo.CodigoFipe }}</th>
+                    <td>{{ veiculo.TipoVeiculo }}</td>
+                    <td>{{ veiculo.Marca }}</td>
+                    <td>{{ veiculo.Modelo }}</td>
+                    <td>{{ veiculo.Combustivel }}</td>
+                    <td><b>{{ veiculo.Valor }}</b></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Comparação por ano</h3>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">AnoModelo</th>
+                    <th scope="col">Posição</th>
+                    <th scope="col">CodigoFipe</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Combustivel</th>
+                    <th scope="col">Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="veiculo in compAno">
+                    <td><b>{{ veiculo.ano }}</b></th>
+                    <td><b>{{ veiculo.Posicao }}</b></td>
+                    <td>{{ veiculo.CodigoFipe }}</t h>
+                    <td>{{ veiculo.TipoVeiculo }}</td>
+                    <td>{{ veiculo.Marca }}</td>
+                    <td>{{ veiculo.Modelo }}</td>
+                    <td>{{ veiculo.Combustivel }}</td>
+                    <td><b>{{ veiculo.Valor }}</b></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</body>
+
+</html>

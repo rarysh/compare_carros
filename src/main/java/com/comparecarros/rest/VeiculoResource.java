@@ -34,7 +34,6 @@ public class VeiculoResource {
     @GET
     @Path("atualizarDadosAPI")
     public void atualizarDadosAPI() {
-        System.out.println("ni");
         veiculoService.atualizarDadosAPI();
     }
 
@@ -107,7 +106,6 @@ public class VeiculoResource {
     @Path("comparacaoPorAno")
     @Operation(summary = "Compara uma lista de Veículos e retorna o mais barato e mais caro por ano", description = "Compara uma lista de Veículos e retorna o mais barato e mais caro por ano. Passar List<Veiculo> como parâmetro.")
     public Map<Integer, Map<String, Veiculo>> comparaListaDeVeiculosPorAno(List<Veiculo> listaVeiculos) {
-        System.out.println("here");
         return veiculoService.comparaListaDeVeiculosPorAno(listaVeiculos);
     }
 
@@ -158,7 +156,7 @@ public class VeiculoResource {
     @Transactional
     @Operation(summary = "Remove o veículo", description = "Remove o veículo.")
     @Parameter(name = "id", description = "primary key do Veiculo", required = true, example = "005340-6")
-    public Response deletarVeiculo(@PathParam("id") String id) {
+    public Response deletarVeiculo(@PathParam("id") long id) {
         Veiculo entity = Veiculo.findById(id);
         if (entity == null) {
             throw new WebApplicationException("Veículo com codigoFipe de " + id + " não existe.", 404);
