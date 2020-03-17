@@ -59,13 +59,10 @@ public class VeiculoService {
                 veiculo = Veiculo.MOTO;
             else if (i == 3)
                 veiculo = Veiculo.CAMINHAO;
-            List<Veiculo> listaMarcas = fipeService.getMarcas(veiculo);
-            for (Veiculo x : listaMarcas) {
-                List<Veiculo> listaModelos = fipeService.getModelos(veiculo, x.codigo).getModelos();
-                for (Veiculo y : listaModelos) {
-                    List<Veiculo> listaAnos = fipeService.getAnos(veiculo, x.codigo, y.codigo);
+            for (Veiculo x : fipeService.getMarcas(veiculo)) {
+                for (Veiculo y : fipeService.getModelos(veiculo, x.codigo).getModelos()) {
                     List<Veiculo> listaParaPersistir = new ArrayList<>();
-                    for (Veiculo z : listaAnos) {
+                    for (Veiculo z : fipeService.getAnos(veiculo, x.codigo, y.codigo)) {
                         Veiculo entity = fipeService.getValor(veiculo, x.codigo, y.codigo, z.codigo);
                         if (Veiculo.findByTipoMarcaModeloAno(i, x.nome, y.nome,
                                 Integer.parseInt(z.nome.substring(0, 4))) == null) {
