@@ -1,0 +1,8 @@
+com/comparecarros/rest/HealthCheckResource.class
+com/comparecarros/rest/LoggingFilter.class
+com/comparecarros/service/VeiculoService.class
+com/comparecarros/rest/VeiculoResource.class
+com/comparecarros/rest/HealthCheckResource$ErrorMapper.class
+com/comparecarros/domain/Modelo.class
+com/comparecarros/domain/Veiculo.class
+com/comparecarros/service/restclient/FipeService.class
